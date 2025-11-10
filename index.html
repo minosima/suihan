@@ -5,111 +5,103 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>炊飯用水量計算ツール</title>
 <style>
-    html, body {
-      touch-action: manipulation; /* ダブルタップズームを無効化、ピンチズームは維持 */
-    }
+  html, body {
+    touch-action: manipulation; /* ダブルタップズームを無効化、ピンチズームは維持 */
+    font-size: 18px; /* ページ全体の最低文字サイズ */
+  }
 
-    /* ページ全体の最低文字サイズを 18px に統一 */
-    html {
-      font-size: 18px;
-    }
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 20px;
+    background: #fafafa;
+    color: #333;
+    font-size: 18px;
+  }
 
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 20px;
-      background: #fafafa;
-      color: #333;
-      font-size: 18px;
-    }
+  h1 {
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+  h4 {
+    font-size: 19px;
+    margin-top: 20px;
+  }
 
-    /* 見出し */
-    h1 {
-      font-size: 22px;
-      margin-bottom: 10px;
-    }
-    h4 {
-      font-size: 19px;
-      margin-top: 20px;
-    }
+  /* ラベル・入力欄は縦並び・幅統一 */
+  label {
+    display: block;
+    margin: 10px 0 4px 0;
+    font-size: 18px;
+  }
 
-    /* ラベルは1行に1項目ずつ表示（元の仕様復帰） */
-    label {
-      display: block;
-      margin: 8px 0;
-      font-size: 18px;
-    }
+  input[type="number"],
+  input[type="text"],
+  select {
+    width: 220px; /* 幅統一 */
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-size: 18px;
+    display: block; /* 縦並び確保 */
+    margin-bottom: 12px;
+  }
 
-    /* フォーム要素（ダブルタップ拡大防止含む） */
-    input, textarea, select, button {
-      font-size: 18px;
-      touch-action: manipulation;
-    }
+  /* ボタン共通 */
+  button {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    margin: 6px 6px 6px 0;
+    font-size: 18px;
+  }
 
-    /* 入力欄（表示・視認性向上） */
-    input[type="number"], input[type="text"], select {
-      width: 200px;
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-    }
+  .btn-blue { background-color: #1976d2; }
+  .btn-blue:hover { background-color: #1565c0; }
 
-    /* 結果表示 */
-    .result {
-      margin-top: 15px;
-      padding: 12px;
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-      font-size: 18px;
-    }
+  .btn-green { background-color: #66bb6a; }
+  .btn-green:hover { background-color: #57a05a; }
 
-    /* ボタン共通 */
-    button {
-      padding: 8px 14px;
-      border: none;
-      border-radius: 6px;
-      color: white;
-      cursor: pointer;
-      margin-right: 6px;
-    }
+  .btn-red { background-color: #ef5350; }
+  .btn-red:hover { background-color: #d84340; }
 
-    /* ボタン色 */
-    .btn-blue { background-color: #1976d2; }
-    .btn-blue:hover { background-color: #1565c0; }
+  /* 結果表示 */
+  .result {
+    margin-top: 15px;
+    padding: 12px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    font-size: 18px;
+  }
 
-    .btn-green { background-color: #66bb6a; }
-    .btn-green:hover { background-color: #57a05a; }
-
-    .btn-red { background-color: #ef5350; }
-    .btn-red:hover { background-color: #d84340; }
-
-    /* トースト通知 */
-    #toast {
-      visibility: hidden;
-      min-width: 200px;
-      margin-left: -100px;
-      background-color: #333;
-      color: #fff;
-      text-align: center;
-      border-radius: 6px;
-      padding: 10px;
-      position: fixed;
-      z-index: 9999;
-      left: 50%;
-      bottom: 30px;
-      font-size: 16px;
-      opacity: 0;
-      transition: opacity 0.5s ease, bottom 0.5s ease;
-    }
-    #toast.show {
-      visibility: visible;
-      opacity: 1;
-      bottom: 50px;
-    }
-
-
+  /* トースト通知 */
+  #toast {
+    visibility: hidden;
+    min-width: 200px;
+    margin-left: -100px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 10px;
+    position: fixed;
+    z-index: 9999;
+    left: 50%;
+    bottom: 30px;
+    font-size: 16px;
+    opacity: 0;
+    transition: opacity 0.5s ease, bottom 0.5s ease;
+  }
+  #toast.show {
+    visibility: visible;
+    opacity: 1;
+    bottom: 50px;
+  }
 </style>
+
 </head>
 <body>
 <h1>炊飯用 水量計算ツール</h1>
