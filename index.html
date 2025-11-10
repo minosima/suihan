@@ -45,6 +45,7 @@
     font-size: 18px;
     display: block; /* 縦並び確保 */
     margin-bottom: 12px;
+    background-color: #d0e7ff; /* 薄い青 */
   }
 
   /* ボタン共通 */
@@ -173,10 +174,10 @@ function calculate(){
   const resultDiv = document.getElementById('result');
   resultDiv.innerHTML = `
     <strong>計算結果:</strong>
-    <span class="result-line water-weight">水の量: ${Math.round(waterWeight)} g</span>
-    <span class="result-line rice-plus-water">お米＋水の合計重量: ${Math.round(ricePlusWater)} g</span>
-    <span class="result-line total-weight">お米＋水＋内釜の合計重量: ${Math.round(totalWeight)} g</span>
-    <span class="result-line rice-go">お炊飯コースの目安: 約 ${goCount.toFixed(1)} 合</span>
+    <span class="result-line water-weight"   >水の量　　　　　　　　　　: ${Math.round(waterWeight)} g</span>
+    <span class="result-line rice-plus-water">お米＋水の合計重量　　　　: ${Math.round(ricePlusWater)} g</span>
+    <span class="result-line total-weight"   >お米＋水＋内釜の合計重量　: ${Math.round(totalWeight)} g</span>
+    <span class="result-line rice-go"        >炊飯コースの目安　　　　　: 約 ${goCount.toFixed(1)} 合</span>
   `;
 }
 
