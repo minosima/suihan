@@ -41,7 +41,7 @@ button {
   padding: 8px 14px;
   border: none;
   border-radius: 8px;
-  color: white;
+  color: #000; /* 黒に変更 */
   cursor: pointer;
   margin: 6px 6px 6px 0;
   font-size: 18px;
@@ -56,16 +56,6 @@ button {
 .btn-yellow { background-color: #ffd700; }
 .btn-yellow:hover { background-color: #ffc400; }
 
-/* 結果表示 */
-.result {
-  margin-top: 15px;
-  padding: 12px;
-  background: #fffbcc; /* 薄い蛍光イエロー */
-  border-radius: 12px;
-  border: 2px solid #000;
-  font-size: 18px;
-}
-
 /* 結果行ごとの背景色（スプラ風） */
 .result-line {
   display: block;
@@ -73,14 +63,16 @@ button {
   border-radius: 6px;
   margin-bottom: 4px;
   font-size: 18px;
+  color: #000; /* 黒に変更 */
 }
-.water-weight { background-color: #ff8c42; color: #fff; font-weight: bold; }  /* オレンジ */
-.rice-plus-water { background-color: #32cd32; color: #fff; font-weight: bold; } /* 緑 */
-.total-weight { background-color: #00bfff; color: #fff; font-weight: bold; }  /* 青 */
-.rice-go { background-color: #ff69b4; color: #fff; font-weight: bold; }       /* ピンク */
+.water-weight { background-color: #ff8c42; font-weight: bold; }  /* オレンジ */
+.rice-plus-water { background-color: #32cd32; font-weight: bold; } /* 緑 */
+.total-weight { background-color: #00bfff; font-weight: bold; }  /* 青 */
+.rice-go { background-color: #ff69b4; font-weight: bold; }       /* ピンク */
 
 /* 水比率強調 */
-.water-ratio { color: #ff8c42; font-weight: bold; }
+.water-ratio { color: #ff8c42; font-weight: bold; } /* 蛍光オレンジのまま */
+
 
 /* トースト通知 */
 #toast {
