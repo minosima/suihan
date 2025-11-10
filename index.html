@@ -262,14 +262,26 @@ function exportProfiles(){
     text += `potWeight=${profile.potWeight}\n`;
     text += `waterRatio=${profile.waterRatio}\n\n`;
   }
-  const blob = new Blob([text], { type: 'text/plain' });
+
+  // 重要：iPhone / Android 両対応の MIME
+  const blob = new Blob([text], { type: 'application/octet-stream' });
   const url = URL.createObjectURL(blob);
+
   const a = document.createElement('a');
   a.href = url;
   a.download = 'ご飯設定ファイル.R_KUN_txt';
+
+  // スマホ対応のため一時的に DOM に追加
+  document.body.appendChild(a);
+
+  // クリック実行
   a.click();
+
+  // 後処理
+  document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
 
 function importProfiles(event){
   const file = event.target.files[0];
