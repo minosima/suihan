@@ -1,338 +1,176 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>炊飯用水量計算ツール</title>
-<style>
-html, body {
-  touch-action: manipulation;
-  font-size: 18px;
-}
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>炊飯 水比率 逆算ツール</title>
+  <style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #e9fcd8; /* 淡い緑色、視認性キープ */
+    color: #222;
+    margin: 20px;
+    font-size: 18px;
+  }
 
-body {
-  font-family: 'Segoe UI', sans-serif;
-  margin: 20px;
-  background: #e9fcd8; /* 淡い緑 */
-  color: #222;
-}
+  /* 見出し */
+  h1 {
+    font-size: 22px;
+    margin-bottom: 10px;
+    font-weight: 700;
+  }
 
-h1 { font-size: 22px; margin-bottom: 10px; }
-h4 { font-size: 19px; margin-top: 20px; }
+  /* ラベルは縦並び */
+  label {
+    display: block;
+    margin: 10px 0 4px 0;
+    font-size: 18px;
+  }
 
-/* ラベル・入力欄 */
-label { display: block; margin: 10px 0 4px 0; font-size: 18px; }
-input[type="number"],
-input[type="text"],
-select {
-  width: 220px;
-  padding: 8px;
-  border-radius: 8px;
-  border: 2px solid #333;
-  font-size: 18px;
-  margin-bottom: 12px;
-  box-sizing: border-box;
-  background-color: #ffefd5; /* 薄いパステルオレンジ */
-  color: #222;
-}
+  /* 入力欄（ネオングリーン + 黒枠） */
+  input[type=number],
+  input[type=text] {
+    width: 220px;
+    padding: 8px;
+    border-radius: 6px;
+    border: 2px solid #111;
+    box-sizing: border-box;
+    font-size: 18px;
+    display: block;
+    margin-bottom: 12px;
+    background-color: #b8f28a; /* ネオングリーン */
+  }
 
-/* ボタン */
-button {
-  padding: 8px 14px;
-  border: none;
-  border-radius: 8px;
-  color: #000; /* 黒に変更 */
-  cursor: pointer;
-  margin: 6px 6px 6px 0;
-  font-size: 18px;
-  font-weight: bold;
-}
-.btn-blue { background-color: #00bfff; }
-.btn-blue:hover { background-color: #009acd; }
-.btn-green { background-color: #32cd32; }
-.btn-green:hover { background-color: #2e8b57; }
-.btn-red { background-color: #ff4500; }
-.btn-red:hover { background-color: #e03e00; }
-.btn-yellow { background-color: #ffd700; }
-.btn-yellow:hover { background-color: #ffc400; }
+  /* 補助説明文 */
+  .muted { font-size: 0.9rem; color: #666; }
+  .note { font-size: 0.85rem; color: #444; margin-top: 6px; }
 
-/* 結果行ごとの背景色（スプラ風） */
-.result-line {
-  display: block;
-  padding: 6px 8px;
-  border-radius: 6px;
-  margin-bottom: 4px;
-  font-size: 18px;
-  color: #000; /* 黒に変更 */
-}
-.water-weight { background-color: #ff8c42; font-weight: bold; }  /* オレンジ */
-.rice-plus-water { background-color: #32cd32; font-weight: bold; } /* 緑 */
-.total-weight { background-color: #00bfff; font-weight: bold; }  /* 青 */
-.rice-go { background-color: #ff69b4; font-weight: bold; }       /* ピンク */
+  /* 結果表示（黒フチ＋淡ピンク / スプラ UI ノリ） */
+  .result {
+    margin-top: 14px;
+    padding: 12px;
+    background: #ffb7ea; /* やや淡めピンクで白地との相性良し */
+    border-radius: 10px;
+    border: 3px solid #111;
+    box-shadow: 0 0 0 4px #111, 0 3px 8px rgba(0,0,0,0.25); 
+    font-size: 18px;
+  }
 
-/* 水比率強調 */
-.water-ratio { color: #ff8c42; font-weight: bold; } /* 蛍光オレンジのまま */
+  /* トースト通知（ここは無変更） */
+  .toast {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 28px;
+    background: #333;
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .toast.show { opacity: 1; }
 
+  /* 水比率の強調（ここが「宮井感」の主役） */
+  .water-ratio {
+    color: #ff3fb4;             /* ショッキングピンク */
+    font-weight: 900;
+    background: #111;           /* ピンクを強調する黒 */
+    padding: 2px 6px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+  }
 
-/* トースト通知 */
-#toast {
-  visibility: hidden;
-  min-width: 200px;
-  margin-left: -100px;
-  text-align: center;
-  border-radius: 6px;
-  padding: 10px;
-  position: fixed;
-  z-index: 9999;
-  left: 50%;
-  bottom: 30px;
-  font-size: 16px;
-  opacity: 0;
-  transition: opacity 0.5s ease, bottom 0.5s ease;
-  font-weight: bold;
-}
-#toast.show { visibility: visible; opacity: 1; bottom: 50px; }
-</style>
-
+  </style>
 
 </head>
 <body>
-<h1>炊飯用 水量計算ツール</h1>
+  <h1>炊飯 — 水比率 逆算ツール</h1>
 
-<label>お米の重量 (g): <input type="number" id="riceWeight" min="0"></label>
-<label>内釜の重量 (g): <input type="number" id="potWeight" min="0"></label>
-<label>水比率 (例: 1.2 = 1.2倍): <input type="number" id="waterRatio" step="0.01"></label>
+  <p class="muted">内釜の重量を測って入力、いつもの手順で準備。 
+  </br >いつものお米の重量を測って入力。
+  </br >いつもの水加減で水を入れる。
+  </br >お米＋内釜＋水の合計を測って入力する。
+  </br >合計重量ではなく、水の重さ入力でも良い。</p>
 
+  <label>お米の重量 (g) <input id="riceWeight" type="number" min="0" step="1" placeholder="例: 150"></label>
+  <label>内釜の重量 (g) <input id="potWeight" type="number" min="0" step="1" placeholder="例:  1000"></label>
 
-<div class="result" id="result"></div>
-<div id="toast"></div>
+  <hr style="margin:12px 0">
 
+ <div class="note">お米＋内釜＋水の合計重量・水の重さ、どちらかを入力してください）</div>
 
-<hr>
-<h4>個別設定値管理</h4>
-<p>読み込む個別設定値</p>
-<select id="profileSelect"></select>
-<label>個別設定値名: <input type="text" id="profileName" placeholder="例: 象印・柔らかめ"></label>
-<button class="btn-blue" onclick="saveProfile()">個別設定値を保存</button>
-<button class="btn-red" onclick="deleteProfile()">選択中の個別設定値を削除</button>
+  <label>お米＋内釜＋水 の合計重量 (g) <input id="totalMeasured" type="number" min="0" step="1" placeholder="例: 1150"></label>
+ 
+  <label>水の重量 (g)  <input id="waterWeightDirect" type="number" min="0" step="1" placeholder="合計重量 未入力時必須"></label>
 
-<hr>
-<h4>設定値管理</h4>
-<button class="btn-blue" onclick="exportProfiles()">設定値をダウンロード</button>
-<input type="file" id="importFile" accept=".R_KUN_txt" style="display:none" onchange="importProfiles(event)">
-<button class="btn-green" onclick="document.getElementById('importFile').click()">設定値を読み込み</button>
+  <div class="result" id="result">
+    <strong>計算結果：</strong>
+    <div id="resultBody" class="note">入力するとリアルタイムで結果が表示されます。</div>
+  </div>
 
-<hr>
+  <div class="toast" id="toast"></div>
 
+  <script>
+    const $ = id => document.getElementById(id);
 
-<script>
-/* --- ユーティリティ --- */
-function round(v){ return Math.round(v); }
-
-function showToast(message, color){
-  const toast = document.getElementById('toast');
-  toast.textContent = message;
-  toast.style.backgroundColor = color || '#333';
-  toast.className = 'show';
-  setTimeout(()=>{ toast.className = toast.className.replace('show',''); }, 2500);
-}
-
-/* --- 計算 --- */
-function calculate(){
-  const riceWeight = parseFloat(document.getElementById('riceWeight').value) || 0;
-  const potWeight = parseFloat(document.getElementById('potWeight').value) || 0;
-  const waterRatio = parseFloat(document.getElementById('waterRatio').value) || 1.2;
-
-  const waterWeight = riceWeight * waterRatio;
-  const ricePlusWater = riceWeight + waterWeight;
-  const totalWeight = ricePlusWater + potWeight;
-  const goCount = riceWeight / 150;
-
-  const resultDiv = document.getElementById('result');
-  resultDiv.innerHTML = `
-    <strong>計算結果:</strong>
-    <span class="result-line water-weight"   >水の量　　　　　　　　　　: ${Math.round(waterWeight)} g</span>
-    <span class="result-line rice-plus-water">お米＋水の合計重量　　　　: ${Math.round(ricePlusWater)} g</span>
-    <span class="result-line total-weight"   >お米＋水＋内釜の合計重量　: ${Math.round(totalWeight)} g</span>
-    <span class="result-line rice-go"        >炊飯コースの目安　　　　　: 約 ${goCount.toFixed(1)} 合</span>
-  `;
-}
-
-
-/* --- 入力リスナ設定 --- */
-function addInputListeners(){
-  ['riceWeight','potWeight','waterRatio'].forEach(id=>{
-    const el = document.getElementById(id);
-    if(el) el.addEventListener('input', calculate);
-  });
-  const pn = document.getElementById('profileName');
-  if(pn) pn.addEventListener('input', ()=>{ /* 表示用要素がなければ何もしない */ });
-}
-
-/* --- プロファイル一覧の読み込み --- */
-function loadProfileList(){
-  const select = document.getElementById('profileSelect');
-  select.innerHTML = '';
-  const data = JSON.parse(localStorage.getItem('riceCalcProfiles') || '{}');
-
-  // 空の選択肢（未選択）を追加しておくと挙動が判りやすい
-  const emptyOpt = document.createElement('option');
-  emptyOpt.value = '';
-  emptyOpt.textContent = '--- 選択してください ---';
-  select.appendChild(emptyOpt);
-
-  for(const name in data){
-    const option = document.createElement('option');
-    option.value = name;
-    option.textContent = name;
-    select.appendChild(option);
-  }
-
-  // change イベントはここで一度だけ設定（重複防止）
-  // removeEventListener を使うために先に無名関数ではなく定義済み関数を使う
-  select.removeEventListener('change', profileSelectChangeHandler);
-  select.addEventListener('change', profileSelectChangeHandler);
-
-  // lastProfile があれば選択してすぐ反映（ロード直後など）
-  const last = localStorage.getItem('lastProfileName');
-  if(last && data[last]){
-    select.value = last;
-    // 明示的に読み込む（即反映）
-    loadProfile(last);
-  } else {
-    // デフォルトで計算更新だけしておく
-    calculate();
-  }
-}
-
-function profileSelectChangeHandler(e){
-  const selected = e.target.value;
-  if(!selected){
-    // 空選択（--- 選択してください ---）が選ばれた場合は何もしない
-    return;
-  }
-  loadProfile(selected);
-  showToast(`「${selected}」を適用しました。`, '#66bb6a');
-}
-
-/* --- プロファイルの保存/読み込み/削除 --- */
-function saveProfile(){
-  const name = document.getElementById('profileName').value.trim();
-  if(!name){ alert('設定値名を入力してください。'); return; }
-
-  const data = JSON.parse(localStorage.getItem('riceCalcProfiles') || '{}');
-  if(data[name]){
-    if(!confirm(`「${name}」は既に存在します。上書きしますか？`)){
-      alert('保存をキャンセルしました。'); return;
+    function showToast(msg, ms = 1600) {
+      const t = $('toast'); t.textContent = msg; t.classList.add('show');
+      clearTimeout(t._t); t._t = setTimeout(()=> t.classList.remove('show'), ms);
     }
-  }
-  data[name] = {
-    potWeight: document.getElementById('potWeight').value,
-    waterRatio: document.getElementById('waterRatio').value
-  };
-  localStorage.setItem('riceCalcProfiles', JSON.stringify(data));
-  localStorage.setItem('lastProfileName', name);
-  loadProfileList(); // リスト再構築 -> 最後のプロファイル自動選択＆即反映される
-  showToast(`「${name}」を保存しました。`, '#1976d2');
-}
 
-function loadProfile(name){
-  const data = JSON.parse(localStorage.getItem('riceCalcProfiles') || '{}');
-  const profileName = name || document.getElementById('profileSelect').value;
-  if(!profileName || !data[profileName]) return;
-  const profile = data[profileName];
-  document.getElementById('potWeight').value = profile.potWeight || '';
-  document.getElementById('waterRatio').value = profile.waterRatio || '';
-  document.getElementById('profileName').value = profileName;
-  localStorage.setItem('lastProfileName', profileName);
-  calculate();
-}
+    function calc() {
+      const rice = parseFloat($('riceWeight').value) || 0;
+      const pot = parseFloat($('potWeight').value) || 0;
+      const totalMeasured = parseFloat($('totalMeasured').value);
+      const waterDirect = parseFloat($('waterWeightDirect').value);
 
-function deleteProfile(){
-  const select = document.getElementById('profileSelect');
-  const name = select.value;
-  if(!name){ alert('削除する設定値を選択してください。'); return; }
-  if(!confirm(`「${name}」を削除しますか？`)) return;
-  const data = JSON.parse(localStorage.getItem('riceCalcProfiles') || '{}');
-  delete data[name];
-  localStorage.setItem('riceCalcProfiles', JSON.stringify(data));
-  // 削除後は lastProfileName が削除された場合にクリアする
-  const last = localStorage.getItem('lastProfileName');
-  if(last === name) localStorage.removeItem('lastProfileName');
-  loadProfileList(); // リスト再構築（自動で選択・反映される）
-  showToast(`「${name}」を削除しました。`, '#ef5350');
-}
-
-/* --- エクスポート/インポート --- */
-function exportProfiles(){
-  const data = JSON.parse(localStorage.getItem('riceCalcProfiles') || '{}');
-  let text = '';
-  for(const name in data){
-    const profile = data[name];
-    text += `【${name}】\n`;
-    text += `potWeight=${profile.potWeight}\n`;
-    text += `waterRatio=${profile.waterRatio}\n\n`;
-  }
-
-  // 重要：iPhone / Android 両対応の MIME
-  const blob = new Blob([text], { type: 'application/octet-stream' });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'ご飯設定ファイル.R_KUN_txt';
-
-  // スマホ対応のため一時的に DOM に追加
-  document.body.appendChild(a);
-
-  // クリック実行
-  a.click();
-
-  // 後処理
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-
-
-function importProfiles(event){
-  const file = event.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e){
-    try{
-      const lines = e.target.result.split(/\r?\n/);
-      const data = {};
-      let currentName = '';
-      for(const line of lines){
-        if(line.startsWith('【') && line.endsWith('】')){
-          currentName = line.slice(1, -1).trim();
-          data[currentName] = {};
-        } else if(line.includes('=') && currentName){
-          const [key, value] = line.split('=');
-          data[currentName][key.trim()] = value.trim();
-        }
+      if (rice <= 0) {
+        $('resultBody').innerHTML = '<span style="color:#c62828">お米の重量は 0 より大きい値を入力してください。</span>';
+        return;
       }
-      const existing = JSON.parse(localStorage.getItem('riceCalcProfiles') || '{}');
-      const merged = { ...existing, ...data };
-      localStorage.setItem('riceCalcProfiles', JSON.stringify(merged));
-      loadProfileList();
-      showToast('設定値を読み込みました。', '#66bb6a');
-    } catch(err){
-      alert('読み込みに失敗しました。形式を確認してください。');
+
+      let water = null;
+      if (!isNaN(waterDirect) && waterDirect >= 0) {
+        water = waterDirect;
+      } else if (!isNaN(totalMeasured) && totalMeasured >= 0) {
+        water = totalMeasured - rice - pot;
+      } else {
+        $('resultBody').innerHTML = '<span class="muted">合計重量 または 水の重さ のどちらかを入力してください。</span>';
+        return;
+      }
+
+      if (water < 0) {
+        $('resultBody').innerHTML = '<span style="color:#c62828">水の重さが負になります。入力値を確認してください。</span>';
+        return;
+      }
+
+      const waterRatio = water / rice;
+      const ricePlusWater = rice + water;
+      const total = ricePlusWater + pot;
+      const go = rice / 150;
+
+      $('resultBody').innerHTML = `
+        水の重さ: <strong>${Math.round(water)} g</strong><br>
+        水比率 (水 / お米): <span class="water-ratio">${waterRatio.toFixed(3)}</span><br>
+        お米＋水: <strong>${Math.round(ricePlusWater)} g</strong><br>
+        お米＋水＋内釜: <strong>${Math.round(total)} g</strong><br>
+        お米の目安: 約 <strong>${go.toFixed(2)}</strong> 合
+      `;
     }
-  };
-  reader.readAsText(file);
-}
 
-/* --- 初期化 --- */
-window.addEventListener('load', ()=>{
-  addInputListeners();
-  loadProfileList(); // ここで change ハンドラ登録＆ lastProfile があれば即反映される
-  // 初回表示の計算呼び出しは loadProfileList の中で処理される
-});
-</script>
+    ['riceWeight','potWeight','totalMeasured','waterWeightDirect'].forEach(id=>{
+      $(id).addEventListener('input', ()=>{
+        const val = $(id).value;
+        if (val !== '') {
+          clearTimeout($(id)._timer);
+          $(id)._timer = setTimeout(calc, 180);
+        }
+      });
+    });
 
-
+    window.addEventListener('load', calc);
+  </script>
 </body>
 </html>
-
