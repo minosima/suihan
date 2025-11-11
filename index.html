@@ -5,118 +5,95 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>炊飯用水量計算ツール</title>
 <style>
-  html, body {
-    touch-action: manipulation; /* ダブルタップズームを無効化、ピンチズームは維持 */
-    font-size: 18px; /* ページ全体の最低文字サイズ */
-  }
+html, body {
+  touch-action: manipulation;
+  font-size: 18px;
+}
 
-  body {
-    font-family: 'Segoe UI', sans-serif;
-    margin: 20px;
-    background: #fff6d5;
-    color: #333;
-    font-size: 18px;
-  }
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin: 20px;
+  background: #e9fcd8; /* 淡い緑 */
+  color: #222;
+}
 
-  h1 {
-    font-size: 22px;
-    margin-bottom: 10px;
-  }
-  h4 {
-    font-size: 19px;
-    margin-top: 20px;
-  }
+h1 { font-size: 22px; margin-bottom: 10px; }
+h4 { font-size: 19px; margin-top: 20px; }
 
-  /* ラベル・入力欄は縦並び・幅統一 */
-  label {
-    display: block;
-    margin: 10px 0 4px 0;
-    font-size: 18px;
-  }
+/* ラベル・入力欄 */
+label { display: block; margin: 10px 0 4px 0; font-size: 18px; }
+input[type="number"],
+input[type="text"],
+select {
+  width: 220px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 2px solid #333;
+  font-size: 18px;
+  margin-bottom: 12px;
+  box-sizing: border-box;
+  background-color: #ffefd5; /* 薄いパステルオレンジ */
+  color: #222;
+}
 
-  input[type="number"],
-  input[type="text"],
-  select {
-    width: 220px; /* 幅統一 */
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-    font-size: 18px;
-    display: block; /* 縦並び確保 */
-    margin-bottom: 12px;
-    background-color: #d0e7ff; /* 薄い青 */
-  }
+/* ボタン */
+button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  color: #000; /* 黒に変更 */
+  cursor: pointer;
+  margin: 6px 6px 6px 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+.btn-blue { background-color: #00bfff; }
+.btn-blue:hover { background-color: #009acd; }
+.btn-green { background-color: #32cd32; }
+.btn-green:hover { background-color: #2e8b57; }
+.btn-red { background-color: #ff4500; }
+.btn-red:hover { background-color: #e03e00; }
+.btn-yellow { background-color: #ffd700; }
+.btn-yellow:hover { background-color: #ffc400; }
 
-  /* ボタン共通 */
-  button {
-    padding: 8px 14px;
-    border: none;
-    border-radius: 6px;
-    color: white;
-    cursor: pointer;
-    margin: 6px 6px 6px 0;
-    font-size: 18px;
-  }
+/* 結果行ごとの背景色（スプラ風） */
+.result-line {
+  display: block;
+  padding: 6px 8px;
+  border-radius: 6px;
+  margin-bottom: 4px;
+  font-size: 18px;
+  color: #000; /* 黒に変更 */
+}
+.water-weight { background-color: #ff8c42; font-weight: bold; }  /* オレンジ */
+.rice-plus-water { background-color: #32cd32; font-weight: bold; } /* 緑 */
+.total-weight { background-color: #00bfff; font-weight: bold; }  /* 青 */
+.rice-go { background-color: #ff69b4; font-weight: bold; }       /* ピンク */
 
-  .btn-blue { background-color: #1976d2; }
-  .btn-blue:hover { background-color: #1565c0; }
-
-  .btn-green { background-color: #66bb6a; }
-  .btn-green:hover { background-color: #57a05a; }
-
-  .btn-red { background-color: #ef5350; }
-  .btn-red:hover { background-color: #d84340; }
-
-  /* 結果表示 */
-  .result {
-    margin-top: 15px;
-    padding: 12px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    font-size: 18px;
-  }
-
-  /* トースト通知 */
-  #toast {
-    visibility: hidden;
-    min-width: 200px;
-    margin-left: -100px;
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 10px;
-    position: fixed;
-    z-index: 9999;
-    left: 50%;
-    bottom: 30px;
-    font-size: 16px;
-    opacity: 0;
-    transition: opacity 0.5s ease, bottom 0.5s ease;
-  }
-  #toast.show {
-    visibility: visible;
-    opacity: 1;
-    bottom: 50px;
-  }
-
-  /* 結果行ごとの背景色 */
-  .result-line {
-    display: block;
-    padding: 6px 8px;
-    border-radius: 4px;
-    margin-bottom: 4px;
-    font-size: 18px;
-  }
-  .water-weight { background-color: #ffe4e1 }       /* 薄いピンク */
-  .rice-plus-water { background-color: #ccffcc }    /* 薄い緑 */
-  .total-weight { background-color: #e0ffff; }       /* 薄い水色 */
-  .rice-go { background-color: #fffacd; }            /* 薄い黄色 */
+/* 水比率強調 */
+.water-ratio { color: #ff8c42; font-weight: bold; } /* 蛍光オレンジのまま */
 
 
+/* トースト通知 */
+#toast {
+  visibility: hidden;
+  min-width: 200px;
+  margin-left: -100px;
+  text-align: center;
+  border-radius: 6px;
+  padding: 10px;
+  position: fixed;
+  z-index: 9999;
+  left: 50%;
+  bottom: 30px;
+  font-size: 16px;
+  opacity: 0;
+  transition: opacity 0.5s ease, bottom 0.5s ease;
+  font-weight: bold;
+}
+#toast.show { visibility: visible; opacity: 1; bottom: 50px; }
 </style>
+
 
 </head>
 <body>
@@ -358,5 +335,3 @@ window.addEventListener('load', ()=>{
 
 </body>
 </html>
-
-
