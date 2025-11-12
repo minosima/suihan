@@ -25,6 +25,7 @@ label { display: block; margin: 10px 0 4px 0; font-size: 18px; }
 input[type="number"],
 input[type="text"],
 select {
+  display: block; 
   width: 220px;
   padding: 8px;
   border-radius: 8px;
@@ -65,9 +66,9 @@ button {
   font-size: 18px;
   color: #000; /* 黒に変更 */
 }
-.water-weight { background-color: #ff8c42; font-weight: bold; }  /* オレンジ */
-.rice-plus-water { background-color: #32cd32; font-weight: bold; } /* 緑 */
-.total-weight { background-color: #00bfff; font-weight: bold; }  /* 青 */
+.water-weight { background-color: #00bfff; font-weight: bold; }  /* 青 */
+.rice-plus-water { background-color: #ff8c42; font-weight: bold; } /* オレンジ */
+.total-weight { background-color: #32cd32; font-weight: bold; }  /* 緑 */
 .rice-go { background-color: #ff69b4; font-weight: bold; }       /* ピンク */
 
 /* 水比率強調 */
@@ -99,9 +100,15 @@ button {
 <body>
 <h1>炊飯用 水量計算ツール</h1>
 
-<label>お米の重量 (g): <input type="number" id="riceWeight" min="0"></label>
-<label>内釜の重量 (g): <input type="number" id="potWeight" min="0"></label>
-<label>水比率 (例: 1.2 = 1.2倍): <input type="number" id="waterRatio" step="0.01"></label>
+<label for="riceWeight">お米の重量 (g):</label>
+<input type="number" id="riceWeight" min="0">
+
+<label for="potWeight">内釜の重量 (g):</label>
+<input type="number" id="potWeight" min="0">
+
+<label for="waterRatio">水比率 (例: 1.2 = 1.2倍):</label>
+<input type="number" id="waterRatio" step="0.01">
+
 
 
 <div class="result" id="result"></div>
